@@ -1,7 +1,7 @@
 import { useCart } from '../context/CartContext';
 import api from '../services/api';
 import { useNavigate } from 'react-router-dom';
-import { Trash2, ShoppingBag, ArrowRight, CreditCard, Tag } from 'lucide-react';
+import { Trash2, ArrowRight, CreditCard, Tag } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const FOOD_EMOJIS: Record<string, string> = {

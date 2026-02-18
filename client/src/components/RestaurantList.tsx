@@ -11,11 +11,6 @@ const FOOD_EMOJIS: Record<string, string> = {
 };
 const getEmoji = (name: string) => FOOD_EMOJIS[name] ?? '🍽️';
 
-const COUNTRY_GRADIENT: Record<string, string> = {
-    INDIA: 'from-orange-600 to-amber-500',
-    AMERICA: 'from-blue-600 to-indigo-500',
-};
-
 export default function RestaurantList() {
     const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
     const [loading, setLoading] = useState(true);
