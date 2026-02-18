@@ -1,0 +1,74 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id      Int     @id @default(autoincrement())
+  name    String
+  role    Role
+  country Country
+  payment String?
+  orders  Order[]
+}
+
+model Restaurant {
+  id      Int      @id @default(autoincrement())
+  name    String
+  country Country
+  menu    MenuItem[]
+}
+
+model MenuItem {
+  id           Int        @id @default(autoincrement())
+  name         String
+  price        Int
+  restaurantId Int
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  orderItems   OrderItem[]
+}
+
+model Order {
+  id      Int        @id @default(autoincrement())
+  status  OrderStatus @default(CREATED)
+  country Country
+  userId  Int
+  user    User       @relation(fields: [userId], references: [id])
+  items   OrderItem[]
+  totalAmount Int?
+}
+
+model OrderItem {
+  id         Int      @id @default(autoincrement())
+  orderId    Int
+  order      Order    @relation(fields: [orderId], references: [id])
+  menuItemId Int
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
+  quantity   Int
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+  MEMBER
+}
+
+enum Country {
+  INDIA
+  AMERICA
+}
+
+enum OrderStatus {
+  CREATED
+  PLACED
+  CANCELLED
+}
