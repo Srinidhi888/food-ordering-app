@@ -34,11 +34,12 @@ A full-stack web application for food ordering with Role-Based Access Control (R
     ```
 
 3.  **Run Application**
+4.  Change the baseUrl in api.ts in services Folder to this value 'http://localhost:3000'
     ```bash
     # Development Mode
     npm run start:dev
     ```
-    The server runs on `http://localhost:3000`.
+    The server runs on 'http://localhost:3000'.
 
 ## Architecture Details
 See [ARCHITECTURE.md](./ARCHITECTURE.md) for design details.
