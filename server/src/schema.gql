@@ -1,0 +1,66 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type MenuItem {
+  id: Int!
+  name: String!
+  price: Int!
+  restaurantId: Int!
+}
+
+type Restaurant {
+  id: Int!
+  name: String!
+  country: String!
+  menu: [MenuItem!]
+}
+
+type OrderItem {
+  id: Int!
+  orderId: Int!
+  menuItemId: Int!
+  quantity: Int!
+}
+
+type Order {
+  id: Int!
+  status: String!
+  country: String!
+  userId: Int!
+  items: [OrderItem!]
+  totalAmount: Int
+}
+
+type User {
+  id: Int!
+  name: String!
+  role: String!
+  country: String!
+  payment: String
+  orders: [Order!]
+}
+
+type Query {
+  restaurants: [Restaurant!]!
+  orders: [Order!]!
+  order(id: Int!): Order!
+  users: [User!]!
+}
+
+type Mutation {
+  createOrder(createOrderDto: CreateOrderDto!): Order!
+  checkoutOrder(id: Int!): Order!
+  cancelOrder(id: Int!): Order!
+  login(name: String!): User!
+  updatePayment(id: Int!, payment: String!): User!
+}
+
+input CreateOrderDto {
+  items: [OrderItemInput!]!
+}
+
+input OrderItemInput {
+  menuItemId: Int!
+  quantity: Int!
+}
