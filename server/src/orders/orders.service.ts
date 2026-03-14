@@ -19,6 +19,14 @@ export class OrdersService {
       throw new NotFoundException('Some menu items not found');
     }
 
+    // Check if all items belong to the same restaurant
+    const restaurantIds = new Set(menuItems.map((i) => i.restaurantId));
+    if (restaurantIds.size > 1) {
+      throw new ForbiddenException(
+        'All items in an order must be from the same restaurant',
+      );
+    }
+
     if (user.role !== Role.ADMIN) {
       const invalidItems = menuItems.filter(
         (i) => i.restaurant.country !== user.country,

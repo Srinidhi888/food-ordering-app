@@ -15,4 +15,11 @@ export class RestaurantsService {
       include: { menu: true },
     });
   }
+
+  findOne(id: number) {
+    return this.prisma.restaurant.findUnique({
+      where: { id },
+      include: { menu: true },
+    });
+  }
 }

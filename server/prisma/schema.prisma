@@ -19,6 +19,9 @@ model User {
   country Country
   payment String?
   orders  Order[]
+  ownedSharedCarts SharedCart[] @relation("CartOwner")
+  sharedCartMemberships SharedCartMember[]
+  sharedCartItemsAdded SharedCartItem[] @relation("ItemAddedBy")
 }
 
 model Restaurant {
@@ -26,6 +29,7 @@ model Restaurant {
   name    String
   country Country
   menu    MenuItem[]
+  sharedCarts SharedCart[]
 }
 
 model MenuItem {
@@ -35,6 +39,7 @@ model MenuItem {
   restaurantId Int
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
   orderItems   OrderItem[]
+  sharedCartItems SharedCartItem[]
 }
 
 model Order {
@@ -56,6 +61,50 @@ model OrderItem {
   quantity   Int
 }
 
+model SharedCart {
+  id            Int     @id @default(autoincrement())
+  name          String
+  ownerId       Int
+  owner         User    @relation("CartOwner", fields: [ownerId], references: [id])
+  restaurantId  Int
+  restaurant    Restaurant @relation(fields: [restaurantId], references: [id])
+  status        SharedCartStatus @default(ACTIVE)
+  members       SharedCartMember[]
+  items         SharedCartItem[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model SharedCartMember {
+  id            Int     @id @default(autoincrement())
+  sharedCartId  Int
+  sharedCart    SharedCart @relation(fields: [sharedCartId], references: [id], onDelete: Cascade)
+  userId        Int
+  user          User    @relation(fields: [userId], references: [id])
+  role          CartMemberRole @default(MEMBER)
+  accessLevel   AccessLevel @default(CAN_ADD_ITEMS)
+  status        MemberStatus @default(ACTIVE)
+  joinedAt      DateTime?
+  invitedAt     DateTime @default(now())
+  
+  @@unique([sharedCartId, userId])
+}
+
+model SharedCartItem {
+  id            Int     @id @default(autoincrement())
+  sharedCartId  Int
+  sharedCart    SharedCart @relation(fields: [sharedCartId], references: [id], onDelete: Cascade)
+  menuItemId    Int
+  menuItem      MenuItem @relation(fields: [menuItemId], references: [id])
+  quantity      Int
+  addedBy       Int
+  addedByUser   User     @relation("ItemAddedBy", fields: [addedBy], references: [id])
+  notes         String?
+  addedAt       DateTime @default(now())
+  
+  @@unique([sharedCartId, menuItemId])
+}
+
 enum Role {
   ADMIN
   MANAGER
@@ -71,4 +120,27 @@ enum OrderStatus {
   CREATED
   PLACED
   CANCELLED
+}
+
+enum SharedCartStatus {
+  ACTIVE
+  ARCHIVED
+}
+
+enum CartMemberRole {
+  OWNER
+  MEMBER
+}
+
+enum AccessLevel {
+  CAN_VIEW
+  CAN_ADD_ITEMS
+  CAN_MANAGE_MEMBERS
+}
+
+enum MemberStatus {
+  INVITED
+  PENDING
+  ACTIVE
+  REMOVED
 }

@@ -16,7 +16,8 @@ export default function RestaurantList() {
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [added, setAdded] = useState<Record<number, boolean>>({});
-    const { addToCart } = useCart();
+    const { addToCartWithRestaurantCheck } = useCart();
+    const [conflictRestaurant, setConflictRestaurant] = useState<string | null>(null);
 
     useEffect(() => {
         api.get('/restaurants')
@@ -26,7 +27,15 @@ export default function RestaurantList() {
     }, []);
 
     const handleAdd = (item: any) => {
-        addToCart(item);
+        const result = addToCartWithRestaurantCheck(item);
+        
+        if (result.cleared && result.conflictRestaurantId) {
+            const conflictRestaurant = restaurants.find(r => 
+                r.menu?.some(m => m.restaurantId === result.conflictRestaurantId)
+            );
+            setConflictRestaurant(conflictRestaurant?.name || 'another restaurant');
+        }
+        
         setAdded(prev => ({ ...prev, [item.id]: true }));
         setTimeout(() => setAdded(prev => ({ ...prev, [item.id]: false })), 1200);
     };
@@ -183,6 +192,69 @@ export default function RestaurantList() {
                     </motion.div>
                 ))}
             </div>
+
+            {/* Restaurant Conflict Modal */}
+            {conflictRestaurant && (
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    onClick={() => setConflictRestaurant(null)}
+                    style={{
+                        position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+                        background: 'rgba(0, 0, 0, 0.7)', display: 'flex',
+                        alignItems: 'center', justifyContent: 'center', zIndex: 999,
+                    }}
+                >
+                    <motion.div
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0.9, opacity: 0 }}
+                        onClick={(e) => e.stopPropagation()}
+                        style={{
+                            background: 'linear-gradient(135deg, rgba(30,41,59,0.95) 0%, rgba(15,23,42,0.95) 100%)',
+                            backdropFilter: 'blur(10px)', borderRadius: 20,
+                            padding: '32px', maxWidth: 420, border: '1px solid rgba(148,163,184,0.2)',
+                            boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
+                        }}
+                    >
+                        <div style={{ textAlign: 'center' }}>
+                            <div style={{
+                                width: 64, height: 64, borderRadius: '50%',
+                                background: 'rgba(239,68,68,0.15)', display: 'flex',
+                                alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px',
+                            }}>
+                                <span style={{ fontSize: 32 }}>⚠️</span>
+                            </div>
+                            <h2 style={{
+                                fontSize: '1.3rem', fontWeight: 700, color: '#f1f5f9',
+                                marginBottom: 12, letterSpacing: '-0.02em',
+                            }}>
+                                Restaurant Changed
+                            </h2>
+                            <p style={{ color: '#cbd5e1', fontSize: '0.95rem', lineHeight: 1.6, marginBottom: 24 }}>
+                                You have items from <span style={{ fontWeight: 700, color: '#fbbf24' }}>{conflictRestaurant}</span> in your cart.
+                                <br />
+                                These items have been removed to start a new order.
+                            </p>
+                            <motion.button
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                onClick={() => setConflictRestaurant(null)}
+                                style={{
+                                    width: '100%', padding: '12px 20px', borderRadius: 12,
+                                    border: 'none', background: 'linear-gradient(135deg, #7c3aed, #9333ea)',
+                                    color: 'white', fontWeight: 600, fontSize: '0.95rem',
+                                    cursor: 'pointer', transition: 'all 0.3s',
+                                    boxShadow: '0 4px 15px rgba(124,58,237,0.4)',
+                                }}
+                            >
+                                Got it!
+                            </motion.button>
+                        </div>
+                    </motion.div>
+                </motion.div>
+            )}
         </div>
     );
 }

@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
-import { ShoppingCart, LogOut, ShieldCheck, UtensilsCrossed, ClipboardList, Zap } from 'lucide-react';
+import { ShoppingCart, LogOut, ShieldCheck, UtensilsCrossed, ClipboardList, Zap, Users } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const ROLE_BADGE: Record<string, string> = {
@@ -51,6 +51,7 @@ export default function Header() {
                     <nav style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                         <NavLink to="/" active={isActive('/')} icon={<UtensilsCrossed size={16} />} label="Menu" />
                         <NavLink to="/orders" active={isActive('/orders')} icon={<ClipboardList size={16} />} label="Orders" />
+                        <NavLink to="/shared-carts" active={isActive('/shared-carts')} icon={<Users size={16} />} label="Shared" />
                         {user.role === 'ADMIN' && (
                             <NavLink to="/admin" active={isActive('/admin')} icon={<ShieldCheck size={16} />} label="Admin" />
                         )}

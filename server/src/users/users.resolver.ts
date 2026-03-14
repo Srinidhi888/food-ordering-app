@@ -12,8 +12,7 @@ export class UsersResolver {
 
   @Query(() => [User], { name: 'users' })
   @UseGuards(GqlAuthGuard)
-  findAll(@CurrentUser() user: PrismaUser) {
-    if (user.role !== 'ADMIN') throw new Error('Only Admin can view all users');
+  findAll() {
     return this.usersService.findAll();
   }
 

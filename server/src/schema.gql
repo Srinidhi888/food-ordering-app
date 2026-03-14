@@ -35,17 +35,67 @@ type Order {
 type User {
   id: Int!
   name: String!
+  email: String
   role: String!
   country: String!
   payment: String
   orders: [Order!]
 }
 
+type SharedCartMember {
+  id: Int!
+  sharedCartId: Int!
+  sharedCart: SharedCart!
+  userId: Int!
+  user: User!
+  role: String!
+  accessLevel: String!
+  status: String!
+  joinedAt: DateTime
+  invitedAt: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type SharedCartItem {
+  id: Int!
+  sharedCartId: Int!
+  sharedCart: SharedCart!
+  menuItemId: Int!
+  menuItem: MenuItem!
+  quantity: Int!
+  addedBy: Int!
+  addedByUser: User!
+  notes: String
+  addedAt: DateTime!
+}
+
+type SharedCart {
+  id: Int!
+  name: String!
+  ownerId: Int!
+  owner: User!
+  restaurantId: Int!
+  restaurant: Restaurant!
+  status: String!
+  members: [SharedCartMember!]!
+  items: [SharedCartItem!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
 type Query {
   restaurants: [Restaurant!]!
+  restaurant(id: Int!): Restaurant!
   orders: [Order!]!
   order(id: Int!): Order!
   users: [User!]!
+  sharedCart(id: Int!): SharedCart!
+  mySharedCarts: [SharedCart!]!
+  cartMembers(cartId: Int!): [SharedCartMember!]!
 }
 
 type Mutation {
@@ -54,6 +104,18 @@ type Mutation {
   cancelOrder(id: Int!): Order!
   login(name: String!): User!
   updatePayment(id: Int!, payment: String!): User!
+  createSharedCart(createSharedCartDto: CreateSharedCartDto!): SharedCart!
+  updateSharedCart(id: Int!, updateSharedCartDto: UpdateSharedCartDto!): SharedCart!
+  archiveSharedCart(id: Int!): SharedCart!
+  addCartItem(cartId: Int!, addCartItemDto: AddCartItemDto!): SharedCartItem!
+  updateCartItemQuantity(cartId: Int!, itemId: Int!, quantity: Int!): SharedCartItem!
+  removeCartItem(cartId: Int!, itemId: Int!): SharedCartItem!
+  clearCartItems(cartId: Int!): SharedCart!
+  inviteMember(cartId: Int!, inviteMemberDto: InviteMemberDto!): SharedCartMember!
+  acceptInvitation(cartId: Int!): SharedCartMember!
+  removeMember(cartId: Int!, memberId: Int!): SharedCartMember!
+  leaveCart(cartId: Int!): SharedCartMember!
+  checkoutSharedCart(cartId: Int!): Order!
 }
 
 input CreateOrderDto {
@@ -63,4 +125,25 @@ input CreateOrderDto {
 input OrderItemInput {
   menuItemId: Int!
   quantity: Int!
+}
+
+input CreateSharedCartDto {
+  name: String!
+  restaurantId: Int!
+}
+
+input UpdateSharedCartDto {
+  name: String
+  restaurantId: Int
+}
+
+input AddCartItemDto {
+  menuItemId: Int!
+  quantity: Int!
+  notes: String
+}
+
+input InviteMemberDto {
+  userId: Int!
+  accessLevel: String
 }

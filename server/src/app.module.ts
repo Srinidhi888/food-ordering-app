@@ -10,6 +10,7 @@ import { RestaurantsModule } from './restaurants/restaurants.module';
 import { OrdersModule } from './orders/orders.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { SharingModule } from './sharing/sharing.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { UsersModule } from './users/users.module';
     OrdersModule,
     AuthModule,
     UsersModule,
+    SharingModule,
   ],
   controllers: [AppController],
   providers: [AppService],
